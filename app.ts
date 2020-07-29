@@ -1,4 +1,4 @@
-import {NextFunction, Request, Response, ErrorRequestHandler} from "express";
+import { NextFunction, Request, Response } from "express";
 
 var createError = require('http-errors');
 var express = require('express');
@@ -21,7 +21,6 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
 
 app.get('/', indexRouter);
 app.use('/users', usersRouter);
