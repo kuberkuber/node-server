@@ -22,6 +22,13 @@ router.get('/', wrapper(async (req : Request, res : Response, next : NextFunctio
       itemDict['name'] = metadata?.name!;
       itemDict['status'] = status?.conditions![0].status || '';
       itemDict['endpoint'] = NLB_URL + '/' + namespace + '/' + itemDict['name'];
+      // 재배포한 경우와 아닌 경우
+      if (item.spec?.template.metadata?.annotations !== undefined){
+        const redeployTime = item.spec.template.metadata.annotations['kubectl.kubernetes.io/restartedAt'];
+        itemDict['deploy_time'] = redeployTime;
+      } else if (metadata?.creationTimestamp !== undefined) {
+        itemDict['deploy_time'] = metadata.creationTimestamp.toString();
+      }
       deploys.push(itemDict);
     }
     res.status(200).send(JSON.stringify(deploys));
