@@ -8,14 +8,15 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var deployRouter = require('./routes/deploy');
-
-var app = express();
+var connect = require('./schemas');
 
 interface Err extends Error {
   status: number
   data ?: any
 }
 
+var app = express();
+// connect();
 app.use(logger('dev'));
 // app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
