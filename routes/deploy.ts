@@ -63,6 +63,8 @@ router.post('/deploy', wrapper(async (req: Request, res: Response, next: NextFun
   if (namespace && repoName && imageName && portNum) {
 	const deployment = await deployObject(namespace, repoName, imageName, portNum);
 	const deployRes = await k8sAppsV1Api.createNamespacedDeployment(namespace, deployment);
+	console.log(deployRes);
+
 	res.status(200).send('hello');
   } else {
 	res.status(400).send('Bad Request : namespace should be specify');

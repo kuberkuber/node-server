@@ -1,25 +1,34 @@
-import * as mongoose from 'mongoose';
+import {
+	set,
+	connect,
+	connection,
+} from 'mongoose';
 
 module.exports = () => {
-	const connect = () => {
+	const dbConnect = () => {
 		if (process.env.NODE_ENV !== 'production') {
-			mongoose.set('debug', true);
+			set('debug', true);
 		}
-		mongoose.connect('mongodb://localhost', {
+		connect('mongodb://localhost', {
 			dbName: 'kuberkuber',
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+			useCreateIndex: true,
 		}).then(() => {
 			console.log('Mongo db connected');
-		}).catch((error) => {
+		}).catch((error: any) => {
+			console.log(typeof error)
 			console.log('Mongo db connection error', error);
 		});
 	};
-	connect();
-	mongoose.connection.on('error', (error) => {
+	dbConnect();
+	connection.on('error', (error: any) => {
 		console.error('연결에러', error);
 	});
-	mongoose.connection.on('disconnected', () => {
+	connection.on('disconnected', () => {
 		console.error('연결이 끊겼습니다. 연결을 재시도합니다.');
-		connect();
+		dbConnect();
 	});
-	// require('./repo');
+	require('./user');
+	require('./repo');
 }

@@ -8,7 +8,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var deployRouter = require('./routes/deploy');
-var connect = require('./schemas');
+var dbConnect = require('./schemas');
 
 interface Err extends Error {
   status: number
@@ -16,7 +16,7 @@ interface Err extends Error {
 }
 
 var app = express();
-// connect();
+dbConnect();
 app.use(logger('dev'));
 // app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
