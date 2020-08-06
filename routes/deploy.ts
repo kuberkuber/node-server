@@ -8,12 +8,13 @@ import {
 	V1ContainerPort,
 	V1PodTemplateSpec,
 	V1PodSpec,
-	V1DeploymentSpec
+	V1DeploymentSpec,
 } from '@kubernetes/client-node';
+import repoTable from '../schemas/repo';
 
 const router = Router();
 
-const deployObject = (namespace: string, repoName: string, imageName: string, portNum: string) : Promise<V1Deployment> => {
+const deployObject = async(namespace: string, repoName: string, imageName: string, portNum: string) : Promise<V1Deployment> => {
 	// metadata
 	const metadata = new V1ObjectMeta;
 	metadata.namespace = namespace;
@@ -50,9 +51,23 @@ const deployObject = (namespace: string, repoName: string, imageName: string, po
 	deployObject.spec = spec;
 
 	return new Promise((resolve) => {
-		console.log(typeof deployObject);
 		resolve(deployObject);
 	});
+}
+
+// TODO : endpointFile 추가
+const insertRepoTable = async(deployRepo: V1Deployment) => {
+	repoTable.create({
+		namespace : deployRepo.metadata?.namespace,
+		repoName : deployRepo.metadata?.name,
+		imageName : deployRepo.spec?.template.spec?.containers[0].image,
+		portNum : deployRepo.spec?.template.spec?.containers[0].ports![0].containerPort,
+		createdAt : deployRepo.metadata?.creationTimestamp,
+	}).then(() => {
+		return Promise.resolve(200);
+	}).catch((Error) => {
+		return Promise.reject(new Error(400));
+	})
 }
 
 router.post('/deploy', wrapper(async (req: Request, res: Response, next: NextFunction) => {
@@ -63,9 +78,9 @@ router.post('/deploy', wrapper(async (req: Request, res: Response, next: NextFun
   if (namespace && repoName && imageName && portNum) {
 	const deployment = await deployObject(namespace, repoName, imageName, portNum);
 	const deployRes = await k8sAppsV1Api.createNamespacedDeployment(namespace, deployment);
-	console.log(deployRes);
-
-	res.status(200).send('hello');
+	await insertRepoTable(deployRes.body);
+	// console.log(await repoTable.find({}));
+	res.status(200).send('deploy finished');
   } else {
 	res.status(400).send('Bad Request : namespace should be specify');
   }

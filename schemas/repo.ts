@@ -21,8 +21,12 @@ const repoSchema = new Schema({
 		required : true,
 	},
 	endpointFile : {
-		type : JSON
+		type : JSON,
 	},
+	createdAt : {
+		type : Date,
+	}
 });
 
-module.exports = mongoose.model('Repo', repoSchema);
+const repoTable = mongoose.model('Repo', repoSchema);
+export default repoTable;
