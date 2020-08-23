@@ -41,7 +41,7 @@ router.get('/', wrapper(async (req : Request, res : Response, next : NextFunctio
     const deploys = await parseRes(namespace, kuberRes);
     res.status(200).send(JSON.stringify(deploys));
   } else {
-    res.status(400).send('Bad Request : namespace should be specify');
+    res.status(400).send('Bad Request : namespace should be specified');
   }
 }));
 
