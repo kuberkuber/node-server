@@ -28,5 +28,4 @@ const repoSchema = new Schema({
 	}
 });
 
-const repoTable = mongoose.model('Repo', repoSchema);
-export default repoTable;
+export const Repos = mongoose.model('Repo', repoSchema);

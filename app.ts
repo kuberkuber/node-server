@@ -8,6 +8,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var deployRouter = require('./routes/deploy');
+var deleteRouter = require('./routes/delete');
 var dbConnect = require('./schemas');
 
 interface Err extends Error {
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.post('/deploy', deployRouter);
+app.delete('/:namespace/repo/:repoName', deleteRouter);
 app.get('/', indexRouter);
 
 // catch 404 and forward to error handler

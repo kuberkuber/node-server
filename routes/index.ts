@@ -1,9 +1,9 @@
 import { Router, NextFunction, Request, Response } from 'express';
 import { k8sAppsV1Api } from '../src/config';
 import { wrapper } from '../src/wrap';
+import { NLB_URL } from '../src/config';
 
 const router = Router();
-const NLB_URL = 'http://kuberkuber-cluster-bace65abd86cb82e.elb.ap-northeast-2.amazonaws.com'
 
 const parseRes = (namespace: string, kuberRes : any) => {
   let deploys: Array<{}> = [];
