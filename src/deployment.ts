@@ -8,16 +8,17 @@ import {
 	V1PodSpec,
 	V1DeploymentSpec,
 } from '@kubernetes/client-node';
-import { k8sAppsV1Api } from '../src/config';
+import { k8sAppsV1Api } from './config';
+import { sleep } from './utils';
 
-const deployObject = async(namespace: string, repoName: string, imageName: string, portNum: string) : Promise<V1Deployment> => {
-	// metadata
+const deployObject = async(namespace: string, repoName: string, imageName: string, portNum: string)
+: Promise<V1Deployment> =>
+{
 	const metadata = new V1ObjectMeta;
 	metadata.namespace = namespace;
 	metadata.name = repoName;
 	metadata.labels = {'app' : repoName};
 
-	// container
 	const container = new V1Container;
 	container.name = repoName;
 	container.image = imageName;
@@ -26,20 +27,17 @@ const deployObject = async(namespace: string, repoName: string, imageName: strin
 	port.containerPort = Number(portNum);
 	container.ports = [port];
 
-	// template
 	const template = new V1PodTemplateSpec;
 	template.metadata = new V1ObjectMeta;
 	template.metadata.labels = {'app': repoName};
 	template.spec = new V1PodSpec;
 	template.spec.containers = [container];
 
-	// spec
 	const spec = new V1DeploymentSpec;
 	spec.replicas = 2;
 	spec.selector = {'matchLabels': {'app': repoName}};
 	spec.template = template;
 
-	// deployment
 	const deployObject = new V1Deployment;
 	deployObject.apiVersion = 'apps/v1';
 	deployObject.kind = 'Deployment';
@@ -51,7 +49,8 @@ const deployObject = async(namespace: string, repoName: string, imageName: strin
 	});
 }
 
-export const deployDeployment = async(namespace : string, repoName : string, imageName : string, portNum : string)
+// TODO: 예외처리
+export const deployDeployment = async(namespace: string, repoName: string, imageName: string, portNum: string)
 : Promise<{
 	response: http.IncomingMessage;
 	body: V1Deployment;
@@ -61,4 +60,26 @@ export const deployDeployment = async(namespace : string, repoName : string, ima
 	return new Promise((resolve) => {
 		resolve(deployRes);
 	})
+}
+
+const readDeployment = async(namespace: string, repoName: string) => {
+	try {
+		const ret = await k8sAppsV1Api.readNamespacedDeployment(repoName, namespace);
+		if (ret.body.status?.availableReplicas && ret.body.status?.availableReplicas >= 1)
+			return new Promise(resolve => resolve(ret));
+		else
+			throw new Error();
+	} catch (error) {
+		return new Promise(reject => reject(error));
+	}
+}
+
+export const deleteDeployment = async(namespace: string, repoName: string) => {
+	try {
+		await k8sAppsV1Api.deleteNamespacedDeployment(repoName, namespace).then((value) => {
+			return new Promise((resolve) => resolve(value));
+		});
+	} catch (error) {
+		return new Promise((reject) => reject('Already deleted'));
+	}
 }
