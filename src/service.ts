@@ -61,9 +61,9 @@ const readService = async(namespace: string, repoName: string) => {
 export const deleteService = async(namespace: string, repoName: string) => {
 	try {
 		await k8sCoreV1Api.deleteNamespacedService(repoName, namespace).then((value) => {
-			return new Promise((resolve) => resolve(value));
+			return Promise.resolve(value);
 		});
 	} catch (error) {
-		return new Promise(reject => reject('Already deleted'));
+		return Promise.reject(error);
 	}
 }

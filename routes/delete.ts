@@ -7,18 +7,22 @@ import { Repos } from '../schemas/repo';
 
 const router = Router();
 
-const deleteRepos = async(namespace: string, repoName: string) => {
-	Repos.findOneAndDelete({
-		namespace: namespace,
-		repoName: repoName
-	}).then((value) => {
-		return Promise.resolve(200);
-	}).catch((error) => {
-		throw new Error(error);
+const deleteRepos = (namespace: string, repoName: string) => {
+	return new Promise((resolve, reject) => {
+		Repos.findOneAndDelete({
+			namespace: namespace,
+			repoName: repoName
+		}).then((value) => {
+			if (value == null)
+				throw new Error("No data to delete");
+			return resolve(value);
+		}).catch((error) => {
+			console.log(error)
+			return reject(error);
+		})
 	})
 }
 
-// TODO: delete 오류처리
 router.delete('/:namespace/repo/:repoName', wrapper(async (req: Request, res: Response, next: NextFunction) => {
 	const namespace = req.params.namespace;
 	const repoName = req.params.repoName;

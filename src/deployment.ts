@@ -77,9 +77,9 @@ const readDeployment = async(namespace: string, repoName: string) => {
 export const deleteDeployment = async(namespace: string, repoName: string) => {
 	try {
 		await k8sAppsV1Api.deleteNamespacedDeployment(repoName, namespace).then((value) => {
-			return new Promise((resolve) => resolve(value));
+			return Promise.resolve(value);
 		});
 	} catch (error) {
-		return new Promise((reject) => reject('Already deleted'));
+		return Promise.reject(error);
 	}
 }

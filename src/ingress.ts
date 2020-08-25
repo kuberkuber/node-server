@@ -71,9 +71,9 @@ const readIngress = async(namespace: string, repoName: string) => {
 export const deleteIngress = async(namespace: string, repoName: string) => {
 	try {
 		await k8sNetworkV1beta1Api.deleteNamespacedIngress(repoName, namespace).then((value) => {
-			return new Promise(resolve => resolve(value));
+			return Promise.resolve(value);
 		});
 	} catch (error) {
-		return new Promise(reject => reject('Already deleted'));
+		return Promise.reject(error);
 	}
 }
