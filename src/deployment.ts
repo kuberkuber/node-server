@@ -49,7 +49,6 @@ const deployObject = async(namespace: string, repoName: string, imageName: strin
 	});
 }
 
-// TODO: 예외처리
 export const deployDeployment = async(namespace: string, repoName: string, imageName: string, portNum: string)
 : Promise<{
 	response: http.IncomingMessage;
@@ -62,16 +61,36 @@ export const deployDeployment = async(namespace: string, repoName: string, image
 	})
 }
 
-const readDeployment = async(namespace: string, repoName: string) => {
+const readDeployment = async(namespace: string, repoName: string) : Promise<V1Deployment>=> {
 	try {
 		const ret = await k8sAppsV1Api.readNamespacedDeployment(repoName, namespace);
 		if (ret.body.status?.availableReplicas && ret.body.status?.availableReplicas >= 1)
-			return new Promise(resolve => resolve(ret));
+			return new Promise(resolve => resolve(ret.body));
 		else
 			throw new Error();
 	} catch (error) {
 		return new Promise(reject => reject(error));
 	}
+}
+
+export const updateDeployment = async(namespace: string, repoName: string, portNum?: string) => {
+	readDeployment(namespace, repoName).then(async(deployment) => {
+		if (!deployment.spec || !deployment.spec.template.spec)
+			throw new Error();
+		const container = deployment.spec.template.spec.containers[0];
+		if (!container.ports)
+			throw new Error();
+		if (portNum && container.ports[0].containerPort != Number(portNum)) {
+			container.ports = [{
+				"containerPort": Number(portNum),
+			}];
+		}
+		await k8sAppsV1Api.replaceNamespacedDeployment(repoName, namespace, deployment).then((value) => {
+			return Promise.resolve(value);
+		});
+	}).catch((error) => {
+		return Promise.reject(error);
+	});
 }
 
 export const deleteDeployment = async(namespace: string, repoName: string) => {

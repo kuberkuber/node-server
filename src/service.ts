@@ -6,7 +6,6 @@ import {
 } from '@kubernetes/client-node';
 import { k8sCoreV1Api } from './config';
 import http = require('http');
-import { sleep } from './utils';
 
 const serviceObject = async(namespace : string, repoName : string, portNum : string)
 : Promise<V1Service> =>
@@ -33,10 +32,9 @@ const serviceObject = async(namespace : string, repoName : string, portNum : str
 
 	return new Promise((resolve) => {
 		resolve(serviceObject);
-	})
+	});
 }
 
-// TODO: 예외처리
 export const deployService = async(namespace: string, repoName: string, portNum: string)
 : Promise<{
 	response: http.IncomingMessage;
@@ -46,16 +44,29 @@ export const deployService = async(namespace: string, repoName: string, portNum:
 	const deployRes = await k8sCoreV1Api.createNamespacedService(namespace, service);
 	return new Promise((resolve) => {
 		resolve(deployRes);
-	})
+	});
 }
 
-const readService = async(namespace: string, repoName: string) => {
+const readService = async(namespace: string, repoName: string) : Promise<V1Service>=> {
 	try {
 		const ret = await k8sCoreV1Api.readNamespacedService(repoName, namespace);
-		return new Promise(resolve => resolve(ret));
+		return new Promise(resolve => resolve(ret.body));
 	} catch (error) {
 		return new Promise(reject => reject(error));
-	}
+	};
+}
+
+export const updateService = async(namespace: string, repoName: string, portNum: string) => {
+	readService(namespace, repoName).then(async(service) => {
+		if (!service.spec || !service.spec.ports)
+			throw new Error();
+		service.spec.ports[0].targetPort = new Number(portNum);
+		await k8sCoreV1Api.replaceNamespacedService(repoName, namespace, service).then((value) => {
+			return Promise.resolve(value);
+		});
+	}).catch((error) => {
+		return Promise.reject(error);
+	});
 }
 
 export const deleteService = async(namespace: string, repoName: string) => {
@@ -65,5 +76,5 @@ export const deleteService = async(namespace: string, repoName: string) => {
 		});
 	} catch (error) {
 		return Promise.reject(error);
-	}
+	};
 }
