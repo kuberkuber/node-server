@@ -9,7 +9,7 @@ import {
 	V1DeploymentSpec,
 } from '@kubernetes/client-node';
 import { k8sAppsV1Api } from './config';
-import { sleep } from './utils';
+import { getTimeISOFormat } from './utils';
 
 const deployObject = async(namespace: string, repoName: string, imageName: string, portNum: string)
 : Promise<V1Deployment> =>
@@ -61,6 +61,7 @@ export const deployDeployment = async(namespace: string, repoName: string, image
 	})
 }
 
+
 const readDeployment = async(namespace: string, repoName: string) : Promise<V1Deployment>=> {
 	try {
 		const ret = await k8sAppsV1Api.readNamespacedDeployment(repoName, namespace);
@@ -71,6 +72,24 @@ const readDeployment = async(namespace: string, repoName: string) : Promise<V1De
 	} catch (error) {
 		return new Promise(reject => reject(error));
 	}
+}
+
+// TODO: Time format최적화
+export const redeployDeployment = async(namespace: string, repoName: string) => {
+	readDeployment(namespace, repoName).then(async(deployment) => {
+		const redeployTime = getTimeISOFormat().split('.')[0]+"+09:00";
+		if (!deployment.spec || !deployment.spec.template.metadata)
+			throw new Error();
+		deployment.spec.template.metadata.annotations = {
+			"kubectl.kubernetes.io/restartedAt" : redeployTime,
+		}
+		await k8sAppsV1Api.replaceNamespacedDeployment(repoName, namespace, deployment).then((value) => {
+			return Promise.resolve(value);
+		})
+		return Promise.resolve();
+	}).catch((error) => {
+		return Promise.reject(error);
+	})
 }
 
 export const updateDeployment = async(namespace: string, repoName: string, portNum?: string) => {

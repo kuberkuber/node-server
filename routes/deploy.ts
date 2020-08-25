@@ -36,7 +36,7 @@ router.post('/deploy', wrapper(async (req: Request, res: Response, next: NextFun
 	await deployService(namespace, repoName, portNum);
 	await deployIngress(namespace, repoName, portNum);
 	await insertRepos(deployRes.body, apiDoc);
-	res.status(200).send('deploy finished');
+	res.status(200).send('Deploy finished');
   } else {
 	res.status(400).send('Bad Request : Form data error');
   }
