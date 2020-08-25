@@ -16,7 +16,7 @@ const insertRepos = (deployRepo: V1Deployment, apiDoc: JSON) => {
 			imageName : deployRepo.spec?.template.spec?.containers[0].image,
 			portNum : deployRepo.spec?.template.spec?.containers[0].ports![0].containerPort,
 			createdAt : deployRepo.metadata?.creationTimestamp,
-			endpointFile: apiDoc,
+			apiDoc: apiDoc,
 		}).then((value) => {
 			resolve(value)
 		}).catch((err) => {

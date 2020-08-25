@@ -20,7 +20,7 @@ const repoSchema = new Schema({
 		type : String,
 		required : true,
 	},
-	endpointFile : {
+	apiDoc : {
 		type : JSON,
 	},
 	createdAt : {

@@ -13,7 +13,7 @@ const deleteRepos = (namespace: string, repoName: string) => {
 			namespace: namespace,
 			repoName: repoName
 		}).then((value) => {
-			if (value == null)
+			if (value === null)
 				throw new Error("No data to delete");
 			return resolve(value);
 		}).catch((error) => {
