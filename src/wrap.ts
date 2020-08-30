@@ -5,6 +5,7 @@ export const wrapper = (asyncFunc:any) => {
     try {
       return await asyncFunc(req, res, next);
     } catch (error) {
+      console.log(error)
       return next(error);
     }
   })

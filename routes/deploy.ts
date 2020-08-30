@@ -31,7 +31,6 @@ router.post('/deploy', wrapper(async (req: Request, res: Response, next: NextFun
   const imageName = req.body['imageName'];
   const portNum = req.body['portNum'];
   const apiDoc = req.body['apiDoc'];
-  console.log(typeof apiDoc);
   if (namespace && repoName && imageName && portNum) {
 	const deployRes = await deployDeployment(namespace, repoName, imageName, portNum);
 	await deployService(namespace, repoName, portNum);
