@@ -12,6 +12,7 @@ var deployRouter = require('./routes/deploy');
 var deleteRouter = require('./routes/delete');
 var updatePortRouter = require('./routes/update');
 var redeployRouter = require('./routes/redeploy');
+var loginRouter = require('./routes/login');
 var dbConnect = require('./schemas');
 
 interface Err extends Error {
@@ -32,6 +33,7 @@ app.post('/deploy', deployRouter);
 app.delete('/:namespace/repo/:repoName', deleteRouter);
 app.patch('/:namespace/repo/:repoName', updatePortRouter);
 app.post('/:namespace/repo/:repoName/redeploy', redeployRouter);
+app.get('/login', loginRouter);
 app.get('/', indexRouter);
 
 // catch 404 and forward to error handler

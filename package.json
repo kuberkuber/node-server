@@ -8,6 +8,7 @@
   "dependencies": {
     "@kubernetes/client-node": "^0.12.0",
     "@types/mongoose": "^5.7.34",
+    "axios": "^0.19.2",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
