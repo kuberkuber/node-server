@@ -9,7 +9,7 @@ import {
 	V1DeploymentSpec,
 } from '@kubernetes/client-node';
 import { k8sAppsV1Api } from './config';
-import { getTimeISOFormat } from './utils';
+import { getTimeISOFormat, sleep } from './utils';
 
 const deployObject = async(namespace: string, repoName: string, imageName: string, portNum: string)
 : Promise<V1Deployment> =>
@@ -62,13 +62,17 @@ export const deployDeployment = async(namespace: string, repoName: string, image
 }
 
 
-const readDeployment = async(namespace: string, repoName: string) : Promise<V1Deployment>=> {
+export const readDeployment = async(namespace: string, repoName: string) : Promise<V1Deployment>=> {
+	const startTime = new Date();
 	try {
-		const ret = await k8sAppsV1Api.readNamespacedDeployment(repoName, namespace);
-		if (ret.body.status?.availableReplicas && ret.body.status?.availableReplicas >= 1)
-			return new Promise(resolve => resolve(ret.body));
-		else
-			throw new Error();
+		while (true) {
+			const ret = await k8sAppsV1Api.readNamespacedDeployment(repoName, namespace);
+			if (ret.body.status?.availableReplicas && ret.body.status?.availableReplicas >= 1)
+				return new Promise(resolve => resolve(ret.body));
+			sleep(2000);
+			if (startTime.getTime() - new Date().getTime() > 30000)
+				throw new Error();
+		}
 	} catch (error) {
 		return new Promise(reject => reject(error));
 	}

@@ -5,6 +5,8 @@ import { Repos } from '../schemas/repo';
 import { deployDeployment } from '../src/deployment';
 import { deployService } from '../src/service';
 import { deployIngress } from '../src/ingress';
+import { readDeployment } from '../src/deployment';
+import { parseRepo } from '../src/getRepo';
 
 const router = Router();
 
@@ -36,7 +38,9 @@ router.post('/deploy', wrapper(async (req: Request, res: Response, next: NextFun
 	await deployService(namespace, repoName, portNum);
 	await deployIngress(namespace, repoName, portNum);
 	await insertRepos(deployRes.body, apiDoc);
-	res.status(200).send('Deploy finished');
+	const deployObject  = await readDeployment(namespace, repoName);
+	const deployInfo = await parseRepo(namespace, deployObject);
+	res.status(200).send(JSON.stringify(deployInfo));
   } else {
 	res.status(400).send('Bad Request : Form data error');
   }
