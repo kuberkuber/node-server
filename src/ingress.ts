@@ -32,8 +32,10 @@ const ingressObject = async(namespace: string, repoName: string, portNum: string
 	metadata.annotations = {
 		"kubernetes.io/ingress.class": "nginx",
 		"nginx.ingress.kubernetes.io/enable-cors": "true",
-		"nginx.ingress.kubernetes.io/cors-allow-origin": "*",
-		"nginx.ingress.kubernetes.io/rewrite-target": "/$2"
+		"nginx.ingress.kubernetes.io/cors-allow-origin": "http://localhost:3000",
+		// "nginx.ingress.kubernetes.io/cors-allow-credentials": "true",
+		// "nginx.ingress.kubernetes.io/cors-allow-methods": "GET, POST, OPTIONS",
+		"nginx.ingress.kubernetes.io/rewrite-target": "/$2",
 	}
 
 	const ingress = new NetworkingV1beta1Ingress();
