@@ -8,12 +8,13 @@ const router = Router();
 router.get('/login', wrapper(async (req: Request, res: Response) => {
 	if (req.query['code'] == undefined)
 	{
-		res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://48a3b680606e.eu.ngrok.io/login');
-		// res.redirect(codeUrl+'?client_id='+clientId+'&redirect_uri=http://48a3b680606e.eu.ngrok.io/login');
+		// res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://localhost:5000/login');
+		res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://8bb8d2572824.ngrok.io/login');
 	}
 	else
 	{
 		const code = req.query['code'];
+		console.log(code)
 		const options = {
 			client_id: clientId,
 			client_secret: clientSecret,
@@ -21,9 +22,7 @@ router.get('/login', wrapper(async (req: Request, res: Response) => {
 		}
 		axios.post(tokenUrl, options)
 		.then((tokenRes: any) => {
-			console.log(tokenRes.data);
-			// res.redirect('http://48a3b680606e.eu.ngrok.io/?namespace=test&token='+tokenRes.data);
-			res.send('http://48a3b680606e.eu.ngrok.io/?namespace=test&token='+tokenRes.data);
+			res.redirect('http://8bb8d2572824.ngrok.io/user?'+tokenRes.data);
 		})
 	}
 }));

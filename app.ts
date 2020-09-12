@@ -13,6 +13,7 @@ var deleteRouter = require('./routes/delete');
 var updatePortRouter = require('./routes/update');
 var redeployRouter = require('./routes/redeploy');
 var loginRouter = require('./routes/login');
+var userRouter = require('./routes/user');
 var dbConnect = require('./schemas');
 
 interface Err extends Error {
@@ -21,19 +22,20 @@ interface Err extends Error {
 }
 
 var app = express();
-dbConnect();
 app.use(cors());
 app.use(logger('dev'));
 // app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+dbConnect();
 
 app.post('/deploy', deployRouter);
 app.delete('/:namespace/repo/:repoName', deleteRouter);
 app.patch('/:namespace/repo/:repoName', updatePortRouter);
 app.post('/:namespace/repo/:repoName/redeploy', redeployRouter);
 app.get('/login', loginRouter);
+app.get('/user', userRouter);
 app.get('/', indexRouter);
 
 // catch 404 and forward to error handler
