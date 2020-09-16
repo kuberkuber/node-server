@@ -9,7 +9,7 @@ router.get('/login', wrapper(async (req: Request, res: Response) => {
 	if (req.query['code'] == undefined)
 	{
 		// res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://localhost:5000/login');
-		res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://8bb8d2572824.ngrok.io/login');
+		res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://3fe8977b945a.ngrok.io/login');
 	}
 	else
 	{
@@ -22,7 +22,7 @@ router.get('/login', wrapper(async (req: Request, res: Response) => {
 		}
 		axios.post(tokenUrl, options)
 		.then((tokenRes: any) => {
-			res.redirect('http://8bb8d2572824.ngrok.io/user?'+tokenRes.data);
+			res.redirect('http://3fe8977b945a.ngrok.io/user?'+tokenRes.data);
 		})
 	}
 }));

@@ -1,0 +1,12 @@
+version: "2"
+services:
+  web:
+    image: kuberkuber/kuberserver:v1.0
+    ports:
+    - "5000:5000"
+    links:
+    - mongo
+  mongo:
+    image: "mongo"
+    ports:
+    - "20000:27017"
