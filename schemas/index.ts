@@ -9,8 +9,8 @@ module.exports = () => {
 		if (process.env.NODE_ENV !== 'production') {
 			set('debug', true);
 		}
-		// connect('mongodb://localhost:27017', {
-			connect('mongodb://mongo:27017', {
+		connect('mongodb://localhost:27017', {
+			// connect('mongodb://mongo:27017', {
 			dbName: 'kuberkuber',
 			useNewUrlParser: true,
 			useUnifiedTopology: true,

@@ -24,7 +24,6 @@ ADD ./.kube/config /.kube/
 # clientSecret설정필요
 WORKDIR /app
 RUN npm install
-
 ENV NODE_ENV development
 EXPOSE 5000 5000
 
