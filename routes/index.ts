@@ -8,6 +8,7 @@ const router = Router();
 /* GET Dashboard. */
 router.get('/', wrapper(async (req : Request, res : Response, next : NextFunction) => {
   const namespace = req.query['namespace']?.toString();
+  console.log(req.headers);
   if (namespace != undefined)
   {
     const kuberRes = await k8sAppsV1Api.listNamespacedDeployment(namespace);

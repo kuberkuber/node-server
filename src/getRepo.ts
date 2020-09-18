@@ -8,8 +8,8 @@ const getRepo = (namespace: string, repoName: string) : Promise<any> => {
 		namespace: namespace,
 		repoName: repoName,
 	  }).exec().then((value) => {
-		if (value === null)
-		  throw new Error("Resource exist. But not in DB.");
+		// if (value === null)
+		//   throw new Error("Resource exist. But not in DB.");
 		resolve(value);
 	  }).catch((error) => {
 		reject(error)
