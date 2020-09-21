@@ -4,8 +4,8 @@ import { Users } from '../schemas/user';
 import { k8sCoreV1Api, jwtSecretKey } from '../src/config';
 import axios from 'axios';
 import { V1Namespace, V1ObjectMeta } from '@kubernetes/client-node';
-import jwt from 'jsonwebtoken';
 
+const jwt = require('jsonwebtoken');
 const router = Router();
 
 const isNewUser = (user: {name: string, id: string, accessToken: string}) : Promise<any>=> {
@@ -61,7 +61,7 @@ const issueJwt = (user: {name: string, id: string, accessToken: string}) => {
 			id: user.id,
 			token: user.accessToken
 		}
-	}, 'jwtSecretKey', {algorithm: 'RS256'});
+	}, jwtSecretKey);
 	return token;
 }
 
@@ -83,11 +83,10 @@ router.get('/user', wrapper(async (req: Request, res: Response) => {
 			}
 			// jwt발급
 			const jwt = issueJwt(user);
-			console.log(jwt);
-			res.header("jwt", "hello");
-			// res.cookie("jwt", "hi");
-			res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-			res.redirect('http://localhost:3000/join?namespace='+user.name);
+			res.status(200).send(jwt);
+			// res.header("Jwt", jwt);
+			// res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+			// res.redirect('http://localhost:3000/?namespace='+user.name);
 		})
 	} else {
 		res.send(404);

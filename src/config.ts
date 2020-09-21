@@ -10,4 +10,5 @@ export const codeUrl = "https://github.com/login/oauth/authorize";
 export const tokenUrl = "https://github.com/login/oauth/access_token";
 export const clientId = "a1867741904e42ccabee";
 export const clientSecret = process.env.clientSecret;
-export const jwtSecretKey = process.env.jwtSecretKey;
+export const jwtSecretKey = "process.env.jwtSecretKey";
+// export const jwtSecretKey = process.env.jwtSecretKey;

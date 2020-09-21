@@ -8,7 +8,8 @@ const router = Router();
 router.get('/login', wrapper(async (req: Request, res: Response) => {
 	if (req.query['code'] == undefined)
 	{
-		res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://363750994707.ngrok.io/login');
+		res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+		res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://ab511c255e1a.ngrok.io/login');
 		// res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://ec2-15-165-100-105.ap-northeast-2.compute.amazonaws.com:5000/login');
 	}
 	else
@@ -21,7 +22,8 @@ router.get('/login', wrapper(async (req: Request, res: Response) => {
 		}
 		axios.post(tokenUrl, options)
 		.then((tokenRes: any) => {
-			res.redirect('http://363750994707.ngrok.io/user?'+tokenRes.data);
+			res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+			res.redirect('http://localhost:3000/user?'+tokenRes.data);
 			// res.redirect('http://ec2-15-165-100-105.ap-northeast-2.compute.amazonaws.com:5000/user?'+tokenRes.data);
 		})
 	}

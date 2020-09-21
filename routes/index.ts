@@ -3,19 +3,33 @@ import { k8sAppsV1Api } from '../src/config';
 import { wrapper } from '../src/wrap';
 import { parseRepos } from '../src/getRepo';
 
+const jwt = require('jsonwebtoken');
 const router = Router();
+
+const verifyUser = (accessToken: string) => {
+  const token = accessToken.split(' ')[1];
+  if (token === undefined)
+    throw new Error("Invalid JWT");
+  const decoded = jwt.verify(token, 'jwtSecretKey');
+  return decoded;
+}
 
 /* GET Dashboard. */
 router.get('/', wrapper(async (req : Request, res : Response, next : NextFunction) => {
   const namespace = req.query['namespace']?.toString();
-  console.log(req.headers);
-  if (namespace != undefined)
-  {
-    const kuberRes = await k8sAppsV1Api.listNamespacedDeployment(namespace);
-    const deploys = await parseRepos(namespace, kuberRes.body);
-    res.status(200).send(JSON.stringify(deploys));
-  } else {
-    res.status(400).send('Bad Request : namespace should be specified');
+  // const token = req.headers.authorization;
+  try {
+    if (namespace) {
+      // if (token && namespace) {
+      // const user = verifyUser(token);
+      const kuberRes = await k8sAppsV1Api.listNamespacedDeployment(namespace);
+      const deploys = await parseRepos(namespace, kuberRes.body);
+      res.status(200).send(JSON.stringify(deploys));
+    } else {
+      throw new Error("Login 필요");
+    }
+  } catch (err) {
+    res.status(400).send(err);
   }
 }));
 
