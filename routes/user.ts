@@ -1,11 +1,10 @@
 import { Router, NextFunction, Request, Response } from 'express';
 import { wrapper } from '../src/wrap';
 import { Users } from '../schemas/user';
-import { k8sCoreV1Api, jwtSecretKey } from '../src/config';
+import { issueJwt } from '../src/jwt';
+import { deployNamespace } from '../src/namespace';
 import axios from 'axios';
-import { V1Namespace, V1ObjectMeta } from '@kubernetes/client-node';
 
-const jwt = require('jsonwebtoken');
 const router = Router();
 
 const isNewUser = (user: {name: string, id: string, accessToken: string}) : Promise<any>=> {
@@ -38,33 +37,6 @@ const insertUser = (user: {name: string, id: string, accessToken: string}) : Pro
 	})
 }
 
-const deployNamespace = async(id: string)
-: Promise<V1Namespace> => {
-	return new Promise((resolve, reject) => {
-		const metadata = new V1ObjectMeta;
-		metadata.name = id.toString();
-		const nsObject = new V1Namespace;
-		nsObject.metadata = metadata;
-		k8sCoreV1Api.createNamespace(nsObject)
-		.then((res) => {
-			resolve(res.body);
-		}).catch((err) => {
-			reject(err);
-		})
-	})
-}
-
-const issueJwt = (user: {name: string, id: string, accessToken: string}) => {
-	const token = jwt.sign({
-		exp: Math.floor(Date.now() / 1000) + (60 * 60),
-		data: {
-			id: user.id,
-			token: user.accessToken
-		}
-	}, jwtSecretKey);
-	return token;
-}
-
 router.get('/user', wrapper(async (req: Request, res: Response) => {
 	const accessToken = req.query['access_token']?.toString();
 	if (accessToken) {
@@ -81,12 +53,8 @@ router.get('/user', wrapper(async (req: Request, res: Response) => {
 				await insertUser(user);
 				await deployNamespace(user.id);
 			}
-			// jwt발급
 			const jwt = issueJwt(user);
-			res.status(200).send(jwt);
-			// res.header("Jwt", jwt);
-			// res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-			// res.redirect('http://localhost:3000/?namespace='+user.name);
+			res.status(200).send({'jwt': jwt, name: user.name});
 		})
 	} else {
 		res.send(404);

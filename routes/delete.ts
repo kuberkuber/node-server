@@ -4,6 +4,7 @@ import { deleteDeployment } from '../src/deployment';
 import { deleteService } from '../src/service';
 import { deleteIngress } from '../src/ingress';
 import { Repos } from '../schemas/repo';
+import { verifyUser } from '../src/jwt';
 
 const router = Router();
 
@@ -24,16 +25,21 @@ const deleteRepos = (namespace: string, repoName: string) => {
 }
 
 router.delete('/:namespace/repo/:repoName', wrapper(async (req: Request, res: Response, next: NextFunction) => {
-	const namespace = req.params.namespace;
 	const repoName = req.params.repoName;
-	if (namespace && repoName) {
-		await deleteDeployment(namespace, repoName);
-		await deleteService(namespace, repoName);
-		await deleteIngress(namespace, repoName);
-		await deleteRepos(namespace, repoName);
-		res.status(200).send('Delete finished');
-	} else {
-		res.status(400).send('Namespace and reponame should be checked.');
+	const token = req.headers.authorization;
+	try {
+		if (token && repoName) {
+			const user = verifyUser(token);
+			await deleteDeployment(user.id, repoName);
+			await deleteService(user.id, repoName);
+			await deleteIngress(user.id, repoName);
+			await deleteRepos(user.id, repoName);
+			res.status(200).send('Delete finished');
+		} else {
+			res.status(400).send('reponame should be checked.');
+		}
+	} catch (err) {
+		res.status(401).send(err);
 	}
 }))
 

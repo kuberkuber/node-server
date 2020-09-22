@@ -7,6 +7,7 @@ import { deployService } from '../src/service';
 import { deployIngress } from '../src/ingress';
 import { readDeployment } from '../src/deployment';
 import { parseRepo } from '../src/getRepo';
+import { verifyUser } from '../src/jwt';
 
 const router = Router();
 
@@ -28,22 +29,27 @@ const insertRepos = (deployRepo: V1Deployment, apiDoc: JSON) => {
 }
 
 router.post('/deploy', wrapper(async (req: Request, res: Response, next: NextFunction) => {
-  const namespace = req.body['namespace'];
-  const repoName = req.body['repoName'];
-  const imageName = req.body['imageName'];
-  const portNum = req.body['portNum'];
-  const apiDoc = req.body['apiDoc'];
-  if (namespace && repoName && imageName && portNum) {
-	const deployRes = await deployDeployment(namespace, repoName, imageName, portNum);
-	await deployService(namespace, repoName, portNum);
-	await deployIngress(namespace, repoName, portNum);
-	await insertRepos(deployRes.body, apiDoc);
-	const deployObject  = await readDeployment(namespace, repoName);
-	const deployInfo = await parseRepo(namespace, deployObject);
-	res.status(200).send(JSON.stringify(deployInfo));
-  } else {
-	res.status(400).send('Bad Request : Form data error');
-  }
+	const repoName = req.body['repoName'];
+	const imageName = req.body['imageName'];
+	const portNum = req.body['portNum'];
+	const apiDoc = req.body['apiDoc'];
+	const token = req.headers.authorization;
+	try {
+		if (token && repoName && imageName && portNum) {
+			const user = verifyUser(token);
+			const deployRes = await deployDeployment(user.id, repoName, imageName, portNum);
+			await deployService(user.id, repoName, portNum);
+			await deployIngress(user.id, repoName, portNum);
+			await insertRepos(deployRes.body, apiDoc);
+			const deployObject  = await readDeployment(user.id, repoName);
+			const deployInfo = await parseRepo(user.id, deployObject);
+			res.status(200).send(JSON.stringify(deployInfo));
+		} else {
+			res.status(401).send('Bad Request : Form data error');
+		}
+	} catch(err) {
+		res.status(401).send(err);
+	}
 }));
 
 module.exports = router;
