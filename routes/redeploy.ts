@@ -10,8 +10,8 @@ router.post('/:namespace/repo/:repoName/redeploy', wrapper(async (req: Request, 
 	const token = req.headers.authorization;
 	try {
 		if (token && repoName) {
-			const user = verifyUser(token);
-			await redeployDeployment(user.id, repoName);
+			const user = verifyUser(token).data.id.toString();
+			await redeployDeployment(user, repoName);
 			res.status(200).send('Redeploy finished');
 		} else {
 			res.status(401).send('Bad Request : Form data error');

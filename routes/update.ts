@@ -26,10 +26,10 @@ router.patch('/:namespace/repo/:repoName', wrapper(async(req: Request, res: Resp
 	const portNum = req.body['portNum'];
 	try {
 		if (token && repoName && portNum) {
-			const user = verifyUser(token);
-			await updateDeployment(user.id, repoName, portNum);
-			await updateService(user.id, repoName, portNum);
-			await updatePortRepos(user.id, repoName, portNum);
+			const user = verifyUser(token).data.id.toString();
+			await updateDeployment(user, repoName, portNum);
+			await updateService(user, repoName, portNum);
+			await updatePortRepos(user, repoName, portNum);
 			res.status(200).send('PortNum changed');
 		} else {
 			res.status(401).send('Namespace,reponame and portNum should be checked.');

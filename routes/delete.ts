@@ -29,11 +29,11 @@ router.delete('/:namespace/repo/:repoName', wrapper(async (req: Request, res: Re
 	const token = req.headers.authorization;
 	try {
 		if (token && repoName) {
-			const user = verifyUser(token);
-			await deleteDeployment(user.id, repoName);
-			await deleteService(user.id, repoName);
-			await deleteIngress(user.id, repoName);
-			await deleteRepos(user.id, repoName);
+			const user = verifyUser(token).data.id.toString();
+			await deleteDeployment(user, repoName);
+			await deleteService(user, repoName);
+			await deleteIngress(user, repoName);
+			await deleteRepos(user, repoName);
 			res.status(200).send('Delete finished');
 		} else {
 			res.status(400).send('reponame should be checked.');

@@ -9,7 +9,7 @@ router.get('/login', wrapper(async (req: Request, res: Response) => {
 	if (req.query['code'] == undefined)
 	{
 		res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-		res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://d3218a3f35c2.ngrok.io/login');
+		res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://b4662ae0a162.ngrok.io/login');
 		// res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://ec2-15-165-100-105.ap-northeast-2.compute.amazonaws.com:5000/login');
 	}
 	else

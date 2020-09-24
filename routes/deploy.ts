@@ -36,13 +36,13 @@ router.post('/deploy', wrapper(async (req: Request, res: Response, next: NextFun
 	const token = req.headers.authorization;
 	try {
 		if (token && repoName && imageName && portNum) {
-			const user = verifyUser(token);
-			const deployRes = await deployDeployment(user.id, repoName, imageName, portNum);
-			await deployService(user.id, repoName, portNum);
-			await deployIngress(user.id, repoName, portNum);
+			const user = verifyUser(token).data.id.toString();
+			const deployRes = await deployDeployment(user, repoName, imageName, portNum);
+			await deployService(user, repoName, portNum);
+			await deployIngress(user, repoName, portNum);
 			await insertRepos(deployRes.body, apiDoc);
-			const deployObject  = await readDeployment(user.id, repoName);
-			const deployInfo = await parseRepo(user.id, deployObject);
+			const deployObject  = await readDeployment(user, repoName);
+			const deployInfo = await parseRepo(user, deployObject);
 			res.status(200).send(JSON.stringify(deployInfo));
 		} else {
 			res.status(401).send('Bad Request : Form data error');
