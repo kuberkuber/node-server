@@ -16,6 +16,6 @@ export const verifyUser = (accessToken: string) => {
 	const token = accessToken.split(' ')[1];
 	if (token === undefined)
 	  throw new Error("Invalid JWT");
-	const user = jwt.verify(token, 'jwtSecretKeys');
+	const user = jwt.verify(token, jwtSecretKey);
 	return user;
 }
