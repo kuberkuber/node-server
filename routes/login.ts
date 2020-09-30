@@ -9,8 +9,8 @@ router.get('/login', wrapper(async (req: Request, res: Response) => {
 	if (req.query['code'] == undefined)
 	{
 		res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-		res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://localhost:5000/login');
-		// res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://ec2-15-165-100-105.ap-northeast-2.compute.amazonaws.com:5000/login');
+		// res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://localhost:5000/login');
+		res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://ec2-15-165-100-105.ap-northeast-2.compute.amazonaws.com/login');
 	}
 	else
 	{
@@ -24,7 +24,6 @@ router.get('/login', wrapper(async (req: Request, res: Response) => {
 		.then((tokenRes: any) => {
 			res.header("Access-Control-Allow-Origin", "http://localhost:3000");
 			res.redirect('http://localhost:3000/user?'+tokenRes.data);
-			// res.redirect('http://ec2-15-165-100-105.ap-northeast-2.compute.amazonaws.com:5000/user?'+tokenRes.data);
 		})
 	}
 }));
