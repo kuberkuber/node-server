@@ -8,8 +8,6 @@ const getRepo = (namespace: string, repoName: string) : Promise<any> => {
 		namespace: namespace,
 		repoName: repoName,
 	  }).exec().then((value) => {
-		// if (value === null)
-		//   throw new Error("Resource exist. But not in DB.");
 		resolve(value);
 	  }).catch((error) => {
 		reject(error)
@@ -35,7 +33,7 @@ const parsing = async(namespace: string, item : V1Deployment) : Promise<{[key: s
 	  itemDict['deployTime'] = metadata.creationTimestamp.toString();
 	}
 	await getRepo(namespace, itemDict['name']).then((value) => {
-	  if (value.get('apiDoc') !== undefined)
+	  if (value && value.get('apiDoc') !== undefined)
 		itemDict['apiDoc'] = value.get('apiDoc');
 	});
 	return new Promise((resolve) => {
