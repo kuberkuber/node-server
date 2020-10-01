@@ -69,8 +69,8 @@ export const readDeployment = async(namespace: string, repoName: string) : Promi
 			const ret = await k8sAppsV1Api.readNamespacedDeployment(repoName, namespace);
 			if (ret.body.status?.availableReplicas && ret.body.status?.availableReplicas >= 1)
 				return new Promise(resolve => resolve(ret.body));
-			sleep(2000);
-			if (startTime.getTime() - new Date().getTime() > 30000)
+			sleep(1000);
+			if (startTime.getTime() - new Date().getTime() > 10000)
 				throw new Error();
 		}
 	} catch (error) {

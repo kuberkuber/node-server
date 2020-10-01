@@ -48,7 +48,7 @@ router.post('/deploy', wrapper(async (req: Request, res: Response, next: NextFun
 			res.status(401).send('Bad Request : Form data error');
 		}
 	} catch(err) {
-		res.status(401).send(err);
+		res.status(400).send(err);
 	}
 }));
 
