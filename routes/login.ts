@@ -8,7 +8,8 @@ const router = Router();
 router.get('/login', wrapper(async (req: Request, res: Response) => {
 	if (req.query['code'] == undefined)
 	{
-		res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+		res.header("Access-Control-Allow-Origin", "*");
+		// res.header("Access-Control-Allow-Origin", "http://ec2-15-165-100-105.ap-northeast-2.compute.amazonaws.com");
 		// res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://localhost:5000/login');
 		res.send(codeUrl+'?client_id='+clientId+'&redirect_uri=http://ec2-15-165-100-105.ap-northeast-2.compute.amazonaws.com:5000/login');
 	}
@@ -22,7 +23,8 @@ router.get('/login', wrapper(async (req: Request, res: Response) => {
 		}
 		axios.post(tokenUrl, options)
 		.then((tokenRes: any) => {
-			res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+			res.header("Access-Control-Allow-Origin", "*");
+			// res.header("Access-Control-Allow-Origin", "http://ec2-15-165-100-105.ap-northeast-2.compute.amazonaws.com");
 			res.redirect('http://ec2-15-165-100-105.ap-northeast-2.compute.amazonaws.com/user?'+tokenRes.data);
 			// res.redirect('http://localhost:3000/user?'+tokenRes.data);
 		})
