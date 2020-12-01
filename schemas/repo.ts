@@ -23,6 +23,9 @@ const repoSchema = new Schema({
 	apiDoc : {
 		type : JSON,
 	},
+	readmeDoc : {
+		type : String,
+	},
 	createdAt : {
 		type : Date,
 	}

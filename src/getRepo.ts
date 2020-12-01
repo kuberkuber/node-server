@@ -35,6 +35,8 @@ const parsing = async(namespace: string, item : V1Deployment) : Promise<{[key: s
 	await getRepo(namespace, itemDict['name']).then((value) => {
 	  if (value && value.get('apiDoc') !== undefined)
 		itemDict['apiDoc'] = value.get('apiDoc');
+	  if (value && value.get('readmeDoc') !== undefined)
+		itemDict['readmeDoc'] = value.get('readmeDoc');
 	});
 	return new Promise((resolve) => {
 		resolve(itemDict);
