@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 export const issueJwt = (user: {name: string, id: string, accessToken: string}) => {
 	const token = jwt.sign({
-		exp: Math.floor(Date.now() / 1000) + (60 * 60),
+		exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24),
 		data: {
 			id: user.id,
 			token: user.accessToken
