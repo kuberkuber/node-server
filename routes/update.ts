@@ -20,19 +20,49 @@ const updatePortRepos = (namespace: string, repoName: string, portNum: string) =
 }
 
 // 포트변경
-router.patch('/:namespace/repo/:repoName', wrapper(async(req: Request, res: Response, next: NextFunction) => {
+router.patch('/:namespace/repo/:repoName/port', wrapper(async(req: Request, res: Response, next: NextFunction) => {
 	const token = req.headers.authorization;
 	const repoName = req.params.repoName;
 	const portNum = req.body['portNum'];
 	try {
 		if (token && repoName && portNum) {
-			const user = verifyUser(token).data.id.toString();
-			await updateDeployment(user, repoName, portNum);
-			await updateService(user, repoName, portNum);
-			await updatePortRepos(user, repoName, portNum);
+			const namespace = verifyUser(token).data.id.toString();
+			await updateDeployment(namespace, repoName, portNum);
+			await updateService(namespace, repoName, portNum);
+			await updatePortRepos(namespace, repoName, portNum);
 			res.status(200).send('PortNum changed');
 		} else {
 			res.status(401).send('Namespace,reponame and portNum should be checked.');
+		}
+	} catch (err) {
+		res.status(401).send(err);
+	}
+}))
+
+const updateReadDoc = (namespace: string, repoName: string, readmeDoc: string) => {
+	return new Promise((resolve, reject) => {
+		Repos.findOneAndUpdate({
+			namespace: namespace,
+			repoName: repoName
+		}, {
+			readmeDoc: readmeDoc
+		}).then((value) => resolve(value))
+		.catch((error) => reject(error));
+	});
+}
+
+// readmeDoc 변경
+router.patch('/:namespace/repo/:repoName/readmedoc', wrapper(async(req: Request, res: Response, next: NextFunction) => {
+	const token = req.headers.authorization;
+	const repoName = req.params.repoName;
+	const readmeDoc = req.body['readmeDoc'];
+	try {
+		if (token && repoName) {
+			const namespace = verifyUser(token).data.id.toString();
+			await updateReadDoc(namespace, repoName, readmeDoc);
+			res.status(200).send('readmeDoc updated');
+		} else {
+			res.status(401).send('Namespace,reponame and readmeDoc should be checked.');
 		}
 	} catch (err) {
 		res.status(401).send(err);
