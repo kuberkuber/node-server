@@ -4,6 +4,8 @@ import { updateDeployment } from '../src/deployment';
 import { updateService } from '../src/service';
 import { Repos } from '../schemas/repo';
 import { verifyUser } from '../src/jwt';
+import { readDeployment } from '../src/deployment';
+import { parseRepo } from '../src/getRepo';
 
 const router = Router();
 
@@ -30,7 +32,9 @@ router.patch('/:namespace/repo/:repoName/port', wrapper(async(req: Request, res:
 			await updateDeployment(namespace, repoName, portNum);
 			await updateService(namespace, repoName, portNum);
 			await updatePortRepos(namespace, repoName, portNum);
-			res.status(200).send('PortNum changed');
+			const deployObject  = await readDeployment(namespace, repoName);
+			const deployInfo = await parseRepo(namespace, deployObject);
+			res.status(200).send(JSON.stringify(deployInfo));
 		} else {
 			res.status(401).send('Namespace,reponame and portNum should be checked.');
 		}
@@ -56,11 +60,15 @@ router.patch('/:namespace/repo/:repoName/readmedoc', wrapper(async(req: Request,
 	const token = req.headers.authorization;
 	const repoName = req.params.repoName;
 	const readmeDoc = req.body['readmeDoc'];
+	console.log("000", readmeDoc)
 	try {
 		if (token && repoName) {
 			const namespace = verifyUser(token).data.id.toString();
 			await updateReadDoc(namespace, repoName, readmeDoc);
-			res.status(200).send('readmeDoc updated');
+			console.log("111", readmeDoc)
+			const deployObject  = await readDeployment(namespace, repoName);
+			const deployInfo = await parseRepo(namespace, deployObject);
+			res.status(200).send(JSON.stringify(deployInfo));
 		} else {
 			res.status(401).send('Namespace,reponame and readmeDoc should be checked.');
 		}
