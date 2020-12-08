@@ -5,6 +5,13 @@ import axios from 'axios';
 // const axios = require('axios');
 const router = Router();
 
+/*
+ login module
+ 1. without code paramter
+ redirect to github oauth
+ 2. with code parameter
+ redirect to user module to get user info
+*/
 router.get('/login', wrapper(async (req: Request, res: Response) => {
 	if (req.query['code'] == undefined)
 	{

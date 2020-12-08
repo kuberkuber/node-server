@@ -37,6 +37,12 @@ const insertUser = (user: {name: string, id: string, accessToken: string}) : Pro
 	})
 }
 
+/*
+ user module
+ get user info from access token
+ if new user, insert user to db and make namespace at cluster
+ return: new jwt
+ */
 router.get('/user', wrapper(async (req: Request, res: Response) => {
 	const accessToken = req.query['access_token']?.toString();
 	if (accessToken) {
