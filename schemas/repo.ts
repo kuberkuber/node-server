@@ -12,6 +12,9 @@ const repoSchema = new Schema({
 		type : String,
 		required : true,
 	},
+	gitInfo : {
+		type : JSON,
+	},
 	imageName : {
 		type : String,
 		required : true,

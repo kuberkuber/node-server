@@ -11,11 +11,12 @@ import { verifyUser } from '../src/jwt';
 
 const router = Router();
 
-const insertRepos = (deployRepo: V1Deployment, apiDoc: JSON, readmeDoc: String) => {
+const insertRepos = (deployRepo: V1Deployment, gitInfo: JSON, apiDoc: JSON, readmeDoc: String) => {
 	return new Promise((resolve, reject) => {
 		Repos.create({
 			namespace : deployRepo.metadata?.namespace,
 			repoName : deployRepo.metadata?.name,
+			gitInfo: gitInfo,
 			imageName : deployRepo.spec?.template.spec?.containers[0].image,
 			portNum : deployRepo.spec?.template.spec?.containers[0].ports![0].containerPort,
 			createdAt : deployRepo.metadata?.creationTimestamp,
@@ -31,6 +32,7 @@ const insertRepos = (deployRepo: V1Deployment, apiDoc: JSON, readmeDoc: String) 
 
 router.post('/deploy', wrapper(async (req: Request, res: Response, next: NextFunction) => {
 	const repoName = req.body['repoName'];
+	const gitInfo = req.body['gitInfo'];
 	const imageName = req.body['imageName'];
 	const portNum = req.body['portNum'];
 	const apiDoc = req.body['apiDoc'];
@@ -42,7 +44,7 @@ router.post('/deploy', wrapper(async (req: Request, res: Response, next: NextFun
 			const deployRes = await deployDeployment(user, repoName, imageName, portNum);
 			await deployService(user, repoName, portNum);
 			await deployIngress(user, repoName, portNum);
-			await insertRepos(deployRes.body, apiDoc, readmeDoc);
+			await insertRepos(deployRes.body, gitInfo, apiDoc, readmeDoc);
 			const deployObject  = await readDeployment(user, repoName);
 			const deployInfo = await parseRepo(user, deployObject);
 			res.status(200).send(JSON.stringify(deployInfo));
