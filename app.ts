@@ -11,6 +11,7 @@ var indexRouter = require('./routes/index');
 var deployRouter = require('./routes/deploy');
 var deleteRouter = require('./routes/delete');
 var updateRouter = require('./routes/update');
+var logRouter = require('./routes/log');
 var redeployRouter = require('./routes/redeploy');
 var loginRouter = require('./routes/login');
 var userRouter = require('./routes/user');
@@ -33,9 +34,9 @@ dbConnect();
 app.post('/deploy', deployRouter);
 app.delete('/:namespace/repo/:repoName', deleteRouter);
 app.use(updateRouter);
-// app.patch('/:namespace/repo/:repoName', updateRouter);
 app.post('/:namespace/repo/:repoName/redeploy', redeployRouter);
 app.get('/login', loginRouter);
+app.get('/:namespace/repo/:repoName/log', logRouter);
 app.get('/user', userRouter);
 app.get('/', indexRouter);
 
