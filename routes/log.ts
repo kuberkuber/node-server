@@ -12,7 +12,6 @@ const getLogFromPod = async(namespace: string, repoName: string, podObject: V1Po
 	let podLog : string = "";
 	const podExist = podObject.some((podItem) => {
 		const tmpPodName = podItem.metadata?.name;
-		console.log(tmpPodName);
 		if (tmpPodName && tmpPodName.startsWith(repoName)) {
 			podName = tmpPodName;
 			return true;
