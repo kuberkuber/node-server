@@ -60,12 +60,10 @@ router.patch('/:namespace/repo/:repoName/readmedoc', wrapper(async(req: Request,
 	const token = req.headers.authorization;
 	const repoName = req.params.repoName;
 	const readmeDoc = req.body['readmeDoc'];
-	console.log("000", readmeDoc)
 	try {
 		if (token && repoName) {
 			const namespace = verifyUser(token).data.id.toString();
 			await updateReadDoc(namespace, repoName, readmeDoc);
-			console.log("111", readmeDoc)
 			const deployObject  = await readDeployment(namespace, repoName);
 			const deployInfo = await parseRepo(namespace, deployObject);
 			res.status(200).send(JSON.stringify(deployInfo));

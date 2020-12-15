@@ -33,8 +33,8 @@ const parsing = async(namespace: string, item : V1Deployment) : Promise<{[key: s
 	  itemDict['deployTime'] = metadata.creationTimestamp.toString();
 	}
 	await getRepo(namespace, itemDict['name']).then((value) => {
-	  if (value && value.get('gitInfo') !== undefined)
-		itemDict['gitInfo'] = value.get('gitInfo');
+	  if (value && value.get('license') !== undefined)
+		itemDict['license'] = value.get('license');
 	  if (value && value.get('apiDoc') !== undefined)
 		itemDict['apiDoc'] = value.get('apiDoc');
 	  if (value && value.get('readmeDoc') !== undefined)
