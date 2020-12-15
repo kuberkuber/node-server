@@ -38,7 +38,6 @@ router.get('/:namespace/repo/:repoName/log', wrapper(async (req: Request, res: R
 	try {
 		if (token && repoName) {
 			const namespace = verifyUser(token).data.id.toString();
-			console.log(namespace);
 			const pods = await k8sCoreV1Api.listNamespacedPod(namespace);
 			const podLog = await getLogFromPod(namespace, repoName, pods.body.items);
 			res.send(podLog);
